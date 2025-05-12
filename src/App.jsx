@@ -1,73 +1,128 @@
 import React, { useState } from 'react';
+
+//Component
+import Modal from './components/Modal/Modal.jsx';
 import ImageCropper from './components/ImageCropper/ImageCropper.jsx';
+import FileUpload from './components/FileUpload/FileUpload.jsx';
 
 const App = () => {
-    const [base64Image, setBase64Image] = useState(null);
-    const [cropSettings, setCropSettings] = useState({
-        enabled: true,
-        slider: false,
-        cropBoxStrokeColor: 'blue',
-        cropBoxStrokeWidth: 4,
-        handleFillColor: 'blue',
-        handleStrokeColor: 'blue',
-        handleSize: 12,
-    });
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [croppedImage, setCroppedImage] = useState(null);
+    const [imageToCrop, setImageToCrop] = useState(null);
+    const [selectedFiles, setSelectedFiles] = useState([]); // Track files
+    const [editFileIndex, setEditFileIndex] = useState(null); // Track index of file being edited
+    const [tempFile, setTempFile] = useState(null); // Track file being uploaded or edited
 
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setBase64Image(reader.result); // base64 string
-        };
-        reader.readAsDataURL(file);
-    };
-
-    const handleCropSettingsChange = (updatedSettings) => {
-        setCropSettings(updatedSettings);
-        if (updatedSettings.croppedImage) {
-            setCroppedImage(updatedSettings.croppedImage);
+    // Handle new file uploads
+    const handleFilesChange = (files) => {
+        // Do not update selectedFiles immediately; wait for cropping
+        const latestFile = files[files.length - 1];
+        if (latestFile && !tempFile) {
+            const imageUrl = URL.createObjectURL(latestFile);
+            setImageToCrop(imageUrl);
+            setTempFile(latestFile); // Store the file temporarily
+            setIsModalOpen(true); // Open modal
         }
     };
 
-    const handleDownload = () => {
-        if (!croppedImage) return;
+    // Handle edit button click from FileUpload
+    const handleEditFile = (file, index) => {
+        const imageUrl = URL.createObjectURL(file);
+        setImageToCrop(imageUrl);
+        setEditFileIndex(index); // Track index of file being edited
+        setTempFile(file); // Store the file being edited
+        setIsModalOpen(true); // Open modal
+    };
 
-        const link = document.createElement('a');
-        link.href = croppedImage; // The base64 image string
-        link.download = 'cropped-image.png'; // Default name for the download
-        link.click(); // Trigger the download
+    // Handle crop changes from ImageCropper
+    const handleCropChange = (data) => {
+        setCroppedImage(data.croppedImage);
+        console.log("Cropped Data:", data);
+    };
+
+    // Handle modal save
+    const handleSubmit = async () => {
+        if (croppedImage && tempFile) {
+            // Convert base64 cropped image to File object
+            const response = await fetch(croppedImage);
+            const blob = await response.blob();
+            const fileName = tempFile.name;
+            const croppedFile = new File([blob], fileName, { type: 'image/png' });
+
+            // Update file list
+            let updatedFiles = [...selectedFiles];
+            if (editFileIndex !== null) {
+                // Replace the edited file at editFileIndex
+                updatedFiles[editFileIndex] = croppedFile;
+            } else {
+                // Add new cropped file for initial upload
+                updatedFiles = [...updatedFiles, croppedFile];
+            }
+            setSelectedFiles(updatedFiles);
+        } else {
+            console.error('Error: No cropped image or temp file available.');
+        }
+
+        // Close modal and clean up
+        setIsModalOpen(false);
+        if (imageToCrop) {
+            URL.revokeObjectURL(imageToCrop);
+        }
+        setImageToCrop(null);
+        setCroppedImage(null);
+        setTempFile(null);
+        setEditFileIndex(null);
+    };
+
+    // Handle modal close
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        if (imageToCrop) {
+            URL.revokeObjectURL(imageToCrop);
+        }
+        setImageToCrop(null);
+        setCroppedImage(null);
+        setTempFile(null);
+        setEditFileIndex(null);
     };
 
     return (
-        <div style={{ padding: '20px' }}>
-            <h1>Image Cropper Example</h1>
+        <div className="app-container">
+            <FileUpload
+                accept="image/*"
+                allowedTypes={['image/jpeg', 'image/png']}
+                maxFiles={10}
+                onFilesChange={handleFilesChange}
+                onEditFile={handleEditFile}
+                dropZoneText="Click to upload image"
+                subText="JPG or PNG only"
+                files={selectedFiles}
+            />
 
-            <input type="file" accept="image/*" onChange={handleFileChange} />
-
-            {base64Image && (
-                <div style={{ marginTop: '20px' }}>
+            <Modal
+                isOpen={isModalOpen}
+                title="Edit Image"
+                onClose={handleCloseModal}
+                onSubmit={handleSubmit}
+                showFooter={true}
+                submitText="Save"
+                cancelText="Cancel"
+                showCloseIcon={true}
+            >
+                {imageToCrop && (
                     <ImageCropper
-                        data={{ image: base64Image }}
-                        width={900}
-                        height={400}
-                        resolutionScale={2}
-                        cropSettings={cropSettings}
-                        onChange={handleCropSettingsChange}
+                        width={400}
+                        height={300}
+                        data={{ image: imageToCrop }}
+                        onChange={handleCropChange}
                     />
-                </div>
-            )}
+                )}
+            </Modal>
 
             {croppedImage && (
-                <div style={{ marginTop: '20px' }}>
-                    <h2>Cropped Preview:</h2>
+                <div style={{ marginTop: '2rem' }}>
+                    <h3>Preview Cropped Image:</h3>
                     <img src={croppedImage} alt="Cropped" style={{ maxWidth: '100%' }} />
-
-                    <button onClick={handleDownload} style={{ marginTop: '20px' }}>
-                        Download Cropped Image
-                    </button>
                 </div>
             )}
         </div>

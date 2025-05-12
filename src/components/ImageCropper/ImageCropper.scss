@@ -1,0 +1,63 @@
+.image-cropper-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.image-cropper-controls{
+  display: flex;
+  flex-direction: row;
+  margin-top: 16px;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.image-cropper-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  cursor: pointer;
+
+  .zoom-btn{
+    &:hover{
+      color: #0072BC;
+    }
+  }
+}
+
+.background-color-picker{
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+
+}
+input[type="color"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 0;
+  height: 0;
+  border: 0 solid black;
+  border-radius: 0;
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+
+  &::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+  &::-webkit-color-swatch {
+    border: none;
+    border-radius: 0;
+  }
+  &::-moz-color-swatch {
+    border: none;
+    border-radius: 0;
+  }
+}
+
+canvas{
+  border: 1px solid #ccc;
+  cursor: default;
+}

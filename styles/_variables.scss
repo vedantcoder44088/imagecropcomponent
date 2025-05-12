@@ -1,0 +1,138 @@
+$primary-color: #0072BC;
+$primary-hover: #0160A3;
+$primary-disabled: #99c4e4;
+
+$secondary-color: #D0D5DD;
+$secondary-hover: #D0D5DD;
+$secondary-disabled: #b0c5db;
+
+$danger-color: #dc3545;
+$danger-hover: #c82333;
+$danger-disabled: #f5a2ab;
+
+$border-primary: #D0D5DD;
+
+.image-drawer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.input-container {
+  position: relative;
+}
+
+.file-input {
+  display: block;
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+  border: 1px solid $border-primary;
+  border-radius: 0.375rem;
+  cursor: pointer;
+
+  &::-webkit-file-upload-button {
+    margin-right: 1rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.375rem;
+    background-color: $primary-color;
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: $primary-hover;
+    }
+
+    &:disabled {
+      background-color: $primary-disabled;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.mode-selector {
+  display: flex;
+  gap: 1rem;
+}
+
+.mode-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.mode-radio {
+  width: 1rem;
+  height: 1rem;
+  accent-color: $primary-color;
+}
+
+.crop-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.crop-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.crop-checkbox {
+  width: 1rem;
+  height: 1rem;
+  accent-color: $primary-color;
+}
+
+.crop-size {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.crop-label {
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.crop-slider {
+  width: 100%;
+  accent-color: $primary-color;
+}
+
+.canvas {
+  border: 1px solid $border-primary;
+  border-radius: 0.375rem;
+}
+
+.download-button {
+  padding: 0.5rem 1rem;
+  background-color: $primary-color;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: $primary-hover;
+  }
+
+  &:disabled {
+    background-color: $primary-disabled;
+    cursor: not-allowed;
+  }
+}
